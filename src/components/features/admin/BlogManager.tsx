@@ -1,0 +1,16 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { postSchema } from '@/lib/validations';
+import { useStore } from '@/stores/StoreProvider';
+import type { Post } from '@/types/store';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
+type Values = z.infer<typeof postSchema>;
+export default function BlogManager() {
+  const { data } = useStore(); const [editing,setEditing] = useState<Post>(); const [open,setOpen] = useState(false);
+  const mutation = useAdminMutation('save_post', 'Article saved to OnSpace Cloud.');
+  const {register,handleSubmit,reset,watch,formState:{errors}} = useForm<Values>({resolver:zodResolver(postSchema),defaultValues:{published:false}}); const title=watch('title'); const body=watch('body');
+  const save = (v: Values) => mutation.mutate({ ...v, ...(editing ? { id: editing.id } : {}) }, { onSuccess: () => { setOpen(false); reset(); } });
+  return <div><div className="mb-8 flex flex-wrap justify-between gap-4"><div><p className="eyebrow mb-3">Write your next chapter</p><h1 className="text-3xl font-semibold">Blog & updates.</h1></div><button className="btn-primary" onClick={()=>{setEditing(undefined);reset({title:'',summary:'',body:'',published:false});setOpen(true);}}>New article</button></div>{open&&<form onSubmit={handleSubmit(save)} className="mb-7 grid gap-6 xl:grid-cols-2"><div className="panel space-y-5">{(['title','summary','body'] as const).map(key=><div key={key}><label htmlFor={`blog-${key}`} className="mb-2 block text-sm capitalize">{key}</label><textarea id={`blog-${key}`} rows={key==='body'?8:2} className="field" {...register(key)}/>{errors[key]&&<p role="alert" className="mt-2 text-sm text-danger">{errors[key]?.message}</p>}</div>)}<label className="flex min-h-12 items-center gap-3"><input type="checkbox" {...register('published')}/>Publish to the public journal</label><div className="flex gap-3"><button className="btn-primary" disabled={mutation.isPending}>Save article</button><button type="button" className="btn-secondary" onClick={()=>setOpen(false)}>Cancel</button></div></div><aside className="panel self-start"><p className="eyebrow mb-5">Private draft preview</p><h2 className="text-2xl">{title||'Your headline here'}</h2><p className="mt-6 whitespace-pre-wrap leading-7 text-muted">{body||'Start writing to preview your article.'}</p></aside></form>}<div className="space-y-4">{data.posts.map(p=><div className="panel flex flex-wrap items-center justify-between gap-4" key={p.id}><div><h2 className="text-xl">{p.title}</h2><p className="mt-2 text-sm text-muted">{p.published?'Published':'Private draft'}</p></div><div className="flex gap-3"><button className="btn-secondary" onClick={()=>{setEditing(p);reset(p);setOpen(true);}}>Edit</button><button className="btn-secondary" disabled={mutation.isPending} onClick={()=>mutation.mutate({id:p.id,title:p.title,summary:p.summary,body:p.body,published:!p.published})}>{p.published?'Unpublish':'Publish'}</button></div></div>)}{!data.posts.length&&<p className="panel py-14 text-muted">No cloud articles yet. Create a draft to begin.</p>}</div></div>;
+}

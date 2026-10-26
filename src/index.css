@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+:root { --background: 220 43% 5%; --foreground: 210 40% 96%; --surface: 220 32% 8%; --elevated: 218 28% 12%; --primary: 202 100% 70%; --muted: 215 16% 68%; --line: 215 25% 19%; --success: 155 58% 65%; --danger: 0 85% 74%; }
+* { border-color: hsl(var(--line)); } body { margin: 0; background: hsl(var(--background)); color: hsl(var(--foreground)); font-family: Inter, sans-serif; font-size: 16px; } h1,h2,h3 { font-family: 'Space Grotesk', sans-serif; } button,a,input,select,textarea { -webkit-tap-highlight-color: transparent; } button:disabled { opacity: .4; cursor: not-allowed; } :focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 4px; } ::selection { background: hsl(var(--primary)/.3); } select option { background: hsl(var(--surface)); } html { scroll-behavior: smooth; }
+}
+@layer components {
+.container-shell { @apply mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-16; }
+.btn-primary { @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-background transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:transform-none; }
+.btn-secondary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-line bg-surface px-5 py-3 text-sm font-medium text-foreground transition-opacity hover:opacity-80; }
+.icon-btn { @apply flex h-11 w-11 items-center justify-center rounded-md transition-opacity hover:opacity-70; }
+.field { @apply min-h-12 w-full rounded-md border border-line bg-background px-4 py-3 text-base text-foreground focus:border-primary focus:outline-none; }
+.eyebrow { @apply text-xs font-semibold uppercase tracking-[0.22em] text-primary; }
+.panel { @apply rounded-xl border border-line bg-surface p-6; }
+}
+.hero-shade { background: linear-gradient(90deg,hsl(var(--background)) 0%,hsl(var(--background)/.92) 24%,hsl(var(--background)/.35) 57%,transparent 100%); }
+.hero-floor { background: linear-gradient(0deg,hsl(var(--background)),transparent 65%); }
+.intro { animation: intro-exit var(--intro-duration,1.6s) ease forwards; }
+.bolt { stroke: hsl(var(--primary)); stroke-width: 1.8; fill:none; filter:drop-shadow(0 0 8px hsl(var(--primary))); animation: bolt-flash 1.2s ease both; }
+.bolt.second { animation-delay:.25s; }
+.intro-logo { animation: logo-enter .65s ease .15s both; }
+@keyframes bolt-flash { 0%,20%,45%,70%,100% { opacity:0; } 15%,35%,60% { opacity:1; } }
+@keyframes logo-enter { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+@keyframes intro-exit { 0%,80% { opacity:1; } 100% { opacity:0; } }
+@media(max-width:639px) { .hero-shade { background:linear-gradient(90deg,hsl(var(--background)/.96),hsl(var(--background)/.58)); } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { animation:none!important; transition:none!important; } }

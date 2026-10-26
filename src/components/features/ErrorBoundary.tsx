@@ -1,0 +1,4 @@
+import { Component, type ReactNode, type ErrorInfo } from 'react';
+interface Props { children:ReactNode; }
+interface State { failed:boolean; }
+export default class ErrorBoundary extends Component<Props,State> { state:State={failed:false};static getDerivedStateFromError(){return{failed:true};} componentDidCatch(error:Error,info:ErrorInfo){console.error('Store rendering error',error,info.componentStack);} render(){if(this.state.failed)return <main className="min-h-screen bg-background p-10 text-foreground"><h1 className="text-3xl font-semibold">The store couldn't load.</h1><p className="mt-4 text-muted">Reload to retry. Your cloud catalogue and private business records will not be removed.</p><button className="btn-primary mt-6" onClick={()=>{location.reload();}}>Reload store</button></main>;return this.props.children;} }

@@ -1,0 +1,8 @@
+export interface ProductVariant { id?: string; label: string; price: number; stock: number; }
+export interface Product { id: string; name: string; slug: string; description: string; image: string; images: string[]; category: string; tags: string[]; keywords: string[]; sku: string; price: number; stock: number; sizes: string[]; variants: ProductVariant[]; published: boolean; preview: boolean; createdAt: string; }
+export interface CartItem { productId: string; size: string; quantity: number; }
+export interface StoreSettings { headline: string; subheading: string; announcement: string; logo: string; introEnabled: boolean; introDuration: number; supportEmail: string; instagram: string; whatsapp: string; deliveryFee: number; domain: string; }
+export interface Order { id: string; reference: string; email: string; name: string; phone: string; state: string; city: string; address: string; notes: string; items: { name: string; size: string; price: number; quantity: number }[]; total: number; delivery: number; payment: 'Pending' | 'Paid' | 'Failed' | 'Refunded'; fulfillment: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled'; tracking: string; createdAt: string; }
+export interface Post { id: string; title: string; slug: string; summary: string; body: string; published: boolean; createdAt: string; }
+export interface Subscriber { email: string; createdAt: string; active: boolean; }
+export interface StoreData { products: Product[]; cart: CartItem[]; wishlist: string[]; settings: StoreSettings; draft: StoreSettings; orders: Order[]; posts: Post[]; subscribers: Subscriber[]; }

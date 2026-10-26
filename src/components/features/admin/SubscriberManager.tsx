@@ -1,0 +1,7 @@
+import { useStore } from '@/stores/StoreProvider';
+import { exportCsv } from '@/lib/exportCsv';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
+export default function SubscriberManager() {
+  const {data}=useStore(); const mutation = useAdminMutation('unsubscribe', 'Subscriber unsubscribed in OnSpace Cloud.');
+  return <div><p className="eyebrow mb-3">Consent-aware cloud subscriptions</p><h1 className="text-3xl font-semibold">Subscribers.</h1><p className="my-5 text-sm leading-7 text-muted">Signups persist privately in OnSpace Cloud. No email provider is connected; no confirmation or campaign emails are sent. Unsubscribed contacts are excluded from exports.</p><button className="btn-secondary mb-7" disabled={!data.subscribers.some(s=>s.active)} onClick={()=>exportCsv('tomioka-subscribers.csv',[['Email','Subscribed at'],...data.subscribers.filter(s=>s.active).map(s=>[s.email,s.createdAt])])}>Export active subscribers</button><div className="space-y-3">{data.subscribers.map(s=><div className="panel flex flex-wrap items-center justify-between gap-4" key={s.email}><div><p>{s.email}</p><p className="mt-2 text-sm text-muted">{s.active?'Active consent':'Unsubscribed'} · {new Date(s.createdAt).toLocaleDateString('en-NG')}</p></div><button className="btn-secondary" disabled={!s.active||mutation.isPending} onClick={()=>mutation.mutate({email:s.email})}>Unsubscribe</button></div>)}{!data.subscribers.length&&<p className="panel py-14 text-muted">No subscribers yet.</p>}</div></div>;
+}

@@ -1,0 +1,13 @@
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import type { Order } from '@/types/store';
+import { money } from '@/constants/store';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
+const schema = z.object({ status: z.enum(['Pending','Processing','Shipped','Delivered','Cancelled']), tracking: z.string().max(200) });
+interface Props { order: Order; onClose: () => void; }
+export default function OrderDetails({ order, onClose }: Props) {
+  const mutation = useAdminMutation('fulfillment', 'Order fulfilment updated in OnSpace Cloud.');
+  const { register, handleSubmit } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { status: order.fulfillment, tracking: order.tracking } });
+  return <section className="panel mt-7"><h2 className="break-all text-xl font-semibold">{order.reference}</h2><p className="mt-4 text-sm text-muted">{order.name} · {order.email} · {order.phone}</p><p className="mt-3 text-sm text-muted">{order.address}, {order.city}, {order.state}</p>{order.notes && <p className="mt-3 text-sm">Notes: {order.notes}</p>}<div className="my-6">{order.items.map((i,n)=><p key={n} className="flex justify-between gap-4 border-b border-line py-3 text-sm"><span>{i.name} / {i.size} × {i.quantity}</span><span>{money(i.price*i.quantity)}</span></p>)}<p className="mt-4 flex justify-between"><span>Delivery</span><span>{money(order.delivery)}</span></p><p className="mt-4 flex justify-between font-semibold"><span>Total · {order.payment}</span><span className="text-primary">{money(order.total)}</span></p></div><form className="space-y-5" onSubmit={handleSubmit(v=>mutation.mutate({id:order.id,...v}))}><div><label className="mb-2 block text-sm" htmlFor="fulfillment">Fulfilment status</label><select id="fulfillment" className="field max-w-sm" {...register('status')}>{['Pending','Processing','Shipped','Delivered','Cancelled'].map(s=><option key={s} disabled={order.payment!=='Paid' && !['Pending','Cancelled'].includes(s)}>{s}</option>)}</select></div><div><label htmlFor="tracking" className="mb-2 block text-sm">Courier tracking reference (if actually dispatched)</label><input id="tracking" className="field" {...register('tracking')}/></div><p className="text-sm leading-7 text-muted">Unpaid requests cannot be processed or dispatched. Payment cannot be changed here; Paystack is not connected.</p><div className="flex gap-3"><button className="btn-primary" disabled={mutation.isPending}>Save fulfilment</button><button type="button" className="btn-secondary" onClick={onClose}>Close details</button></div></form></section>;
+}

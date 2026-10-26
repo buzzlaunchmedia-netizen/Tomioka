@@ -1,0 +1,8 @@
+[functions.store-admin]
+verify_jwt = false
+
+[functions.store-public]
+verify_jwt = false
+
+[functions.store-sitemap]
+verify_jwt = false

@@ -1,0 +1,10 @@
+import { useState } from 'react';
+import { useStore } from '@/stores/StoreProvider';
+import { money } from '@/constants/store';
+import { exportCsv } from '@/lib/exportCsv';
+import { Download } from 'lucide-react';
+import OrderDetails from '@/components/features/admin/OrderDetails';
+export default function OrderManager() {
+  const { data } = useStore(); const [query,setQuery]=useState(''); const [selected,setSelected]=useState<string>(); const order=data.orders.find(o=>o.id===selected);
+  return <div><div className="mb-8 flex flex-wrap justify-between gap-4"><div><p className="eyebrow mb-3">Server-created order requests</p><h1 className="text-3xl font-semibold">Orders.</h1></div><button className="btn-secondary" disabled={!data.orders.length} onClick={()=>exportCsv('tomioka-orders.csv',[['Reference','Date','Name','Total NGN','Payment','Fulfillment'],...data.orders.map(o=>[o.reference,o.createdAt,o.name,o.total,o.payment,o.fulfillment])])}><Download size={17}/>Export CSV</button></div><label className="mb-2 block text-sm" htmlFor="order-search">Find an order</label><input id="order-search" className="field mb-6 max-w-lg" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Reference, name or email"/>{!data.orders.length?<div className="panel py-14 text-muted">No order requests have been created yet.</div>:<div className="space-y-3">{data.orders.filter(o=>`${o.reference} ${o.name} ${o.email}`.toLowerCase().includes(query.toLowerCase())).map(o=><button key={o.id} onClick={()=>setSelected(o.id)} className="panel flex w-full flex-wrap items-center justify-between gap-3 text-left transition-opacity hover:opacity-80"><div><p className="break-all font-display">{o.reference}</p><p className="mt-2 text-sm text-muted">{o.name} · {new Date(o.createdAt).toLocaleDateString('en-NG')}</p></div><span className="text-sm text-muted">{o.payment} / {o.fulfillment}</span><strong className="text-primary">{money(o.total)}</strong></button>)}</div>}{order&&<OrderDetails key={`${order.id}-${order.fulfillment}`} order={order} onClose={()=>setSelected(undefined)}/>}</div>;
+}

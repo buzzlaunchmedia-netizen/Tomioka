@@ -1,0 +1,2 @@
+import type { Config } from 'tailwindcss';
+export default { content: ['./index.html', './src/**/*.{ts,tsx}'], theme: { extend: { colors: { background: 'hsl(var(--background))', foreground: 'hsl(var(--foreground))', surface: 'hsl(var(--surface))', elevated: 'hsl(var(--elevated))', primary: 'hsl(var(--primary))', muted: 'hsl(var(--muted))', line: 'hsl(var(--line))', success: 'hsl(var(--success))', danger: 'hsl(var(--danger))' }, fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] } } }, plugins: [] } satisfies Config;
